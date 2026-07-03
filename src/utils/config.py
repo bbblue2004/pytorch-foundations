@@ -1,2 +1,2 @@
-EPOCHS = 100
+EPOCHS = 50
 LR = 0.01
