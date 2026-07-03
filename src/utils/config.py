@@ -1,2 +1,6 @@
 EPOCHS = 50
 LR = 0.01
+
+N = 200
+SIGMA = 2
+SEED = 42

@@ -4,15 +4,15 @@ from torch import nn
 from src.data.linear_regression import data_linear_regression
 from src.models.linear_regression import LinearRegression
 from src.utils.config import EPOCHS, LR
-from src.utils.visualization import LinRegPlot, plot_lin_reg, plot_loss
-from src.utils.metrics import regression_metrics
+from src.utils.visualization import LinRegPlot, plot_linear_regression, plot_loss
+from src.utils.metrics import linear_regression_metrics
 
 
 def train_linear_regression():
     dirname = "01_linear_regression"
 
     X, fX, Y = data_linear_regression()
-    plot_lin_reg(LinRegPlot(X, Y, fX, dirname), "data.png")
+    plot_linear_regression(LinRegPlot(X, Y, fX, dirname), "data.png")
 
     model = LinearRegression(X.shape[1], Y.shape[1])
     loss_fn = nn.MSELoss()                  # MSE for continuous variables
@@ -32,12 +32,12 @@ def train_linear_regression():
     w, b = model.linear.weight.item(), model.linear.bias.item()
     print(f"After training: w={w:.3f}, b={b:.3f} | actual: w=3.0, b=2.0")
 
-    plot_lin_reg(LinRegPlot(X, Y, fX, dirname, w, b), "line.png")
+    plot_linear_regression(LinRegPlot(X, Y, fX, dirname, w, b), "line.png")
 
     plot_loss(losses, dirname)
 
     model.eval()           # mode evaluation from now on
     with torch.no_grad():                # to ensure that pytorch does not compute the graph for inference
         Yhat = model(X)
-        metrics = regression_metrics(Y, Yhat)
-        print(f"Metrics: MSE = {metrics['mse']}, RMSE = {metrics['rmse']}, MAE = {metrics['mae']}, R2 = {metrics['r2']}")
+        metrics = linear_regression_metrics(Y, Yhat)
+        print(f"Metrics: MSE = {metrics['mse']:.4f}, RMSE = {metrics['rmse']:.4f}, MAE = {metrics['mae']:.4f}, R2 = {metrics['r2']:.4f}")

@@ -27,7 +27,7 @@ class LinRegPlot:
     b: float | None = None
 
 
-def plot_lin_reg(plot: LinRegPlot, filename: str) -> None:
+def plot_linear_regression(plot: LinRegPlot, filename: str) -> None:
     x = plot.X.numpy().flatten()        # flatten means transforming a tensor into a 1-dimensional vector
     y = plot.Y.numpy().flatten()
     fx = plot.fX.numpy().flatten()
