@@ -52,10 +52,10 @@ def plot_lin_reg(plot: LinRegPlot, filename: str) -> None:
     plt.close(fig)
 
 
-def plot_loss(losses, dirname):
+def plot_loss(losses, dirname, filename = "loss.png"):
     plt.plot(range(1, len(losses) + 1), losses)
     plt.xlabel("epoch")
     plt.ylabel("loss")
     plt.title("Evolution of loss value")
-    plt.savefig(f"figures/{dirname}/loss.png")
+    plt.savefig(_figure_path(dirname, filename))
     plt.close()
