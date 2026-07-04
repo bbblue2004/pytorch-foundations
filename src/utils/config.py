@@ -1,5 +1,5 @@
 EPOCHS = 50
-LR = 0.01
+LR = 1
 
 N = 200
 SIGMA = 2

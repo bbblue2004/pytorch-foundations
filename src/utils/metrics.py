@@ -13,5 +13,30 @@ def linear_regression_metrics(Y: torch.Tensor, Yhat : torch.Tensor) -> dict:
     r2 = 1 - rss / tss
     return {"mse": mse.item(), "mae": mae.item(), "rmse": rmse.item(), "r2": r2.item()}
 
-# @torch.no_grad()
-# def logistic_regression_metrics(Y: torch.Tensor, Yhat : torch.Tensor) -> dict:
+
+@torch.no_grad()
+def logistic_regression_metrics(y: torch.Tensor, logits : torch.Tensor, threshold=0.5) -> dict:
+    logits = logits.view(-1)          # logits : [400, 1] -> [400]
+    yhat = torch.sigmoid(logits)
+    pred = yhat >= threshold
+
+    tp = (pred & (y == 1)).sum().item()     # & for boolean manipulation in pytorch, .item() to get a float
+    tn = (~pred & (y == 0)).sum().item()    # ~pred instead of !pred
+    fp = (pred & (y == 0)).sum().item()
+    fn = (~pred & (y == 1)).sum().item()
+
+    accuracy = (tp + tn) / (tp + tn + fp + fn)
+    precision = tp / (tp + fp) if tp + fp > 0 else 0.0
+    recall = tp / (tp + fn) if tp + fn > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0.0
+
+    return {
+        "tp": tp,
+        "tn": tn,
+        "fp": fp,
+        "fn": fn,
+        "accuracy": accuracy,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1
+    }

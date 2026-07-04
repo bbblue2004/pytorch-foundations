@@ -36,7 +36,7 @@ def train_linear_regression():
 
     plot_loss(losses, dirname)
 
-    model.eval()           # mode evaluation from now on
+    model.eval()               # mode evaluation from now on
     with torch.no_grad():                # to ensure that pytorch does not compute the graph for inference
         Yhat = model(X)
         metrics = linear_regression_metrics(Y, Yhat)
