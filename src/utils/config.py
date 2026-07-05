@@ -24,3 +24,14 @@ NN_2D = {
     "hidden_size": 16,
     "output_size": 1
 }
+
+MNIST_MLP = {
+    "epochs": 5,
+    "lr": 0.01,
+    "input_size": 28*28,
+    "hidden_size": 128,
+    "output_size": 10,
+    "val_ratio": 0.1,
+    "data_dir": "data",
+    "batch_size": 64
+}

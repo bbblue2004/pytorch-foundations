@@ -56,7 +56,7 @@ def train_neural_net_2D():
 
     model.eval()
     with torch.no_grad():
-        # here we compare the train metrics to the validation metrics
+        # here we compare the training metrics to the validation metrics
         train_metrics = binary_classification_metrics(Y_train, model(X_train))
         val_metrics = binary_classification_metrics(Y_val, model(X_val))
         print("========== Metrics ==========\n")

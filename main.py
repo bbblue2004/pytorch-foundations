@@ -3,6 +3,7 @@ import argparse
 from src.train.linear_regression import train_linear_regression
 from src.train.logistic_regression import train_logistic_regression
 from src.train.neural_net_2D import train_neural_net_2D
+from src.train.mnist_mlp import train_mnist_mlp
 from src.utils.config import SEED
 
 
@@ -10,7 +11,7 @@ EXPERIMENTS = {
     "linreg": train_linear_regression,
     "logreg": train_logistic_regression,
     "nn2d": train_neural_net_2D,
-    # "mnist_mlp": train_mnist_mlp,
+    "mnist_mlp": train_mnist_mlp,
     # "mnist_cnn": train_mnist_cnn,
 }
 
