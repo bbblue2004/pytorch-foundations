@@ -15,15 +15,16 @@ def linear_regression_metrics(Y: torch.Tensor, Yhat : torch.Tensor) -> dict:
 
 
 @torch.no_grad()
-def logistic_regression_metrics(y: torch.Tensor, logits : torch.Tensor, threshold=0.5) -> dict:
+def logistic_regression_metrics(Y: torch.Tensor, logits : torch.Tensor, threshold=0.5) -> dict:
     logits = logits.view(-1)          # logits : [400, 1] -> [400]
-    yhat = torch.sigmoid(logits)
-    pred = yhat >= threshold
+    Y = Y.float().view(-1)            # actually optional, but just in case
+    Yhat = torch.sigmoid(logits)
+    pred = Yhat >= threshold
 
-    tp = (pred & (y == 1)).sum().item()     # & for boolean manipulation in pytorch, .item() to get a float
-    tn = (~pred & (y == 0)).sum().item()    # ~pred instead of !pred
-    fp = (pred & (y == 0)).sum().item()
-    fn = (~pred & (y == 1)).sum().item()
+    tp = (pred & (Y == 1)).sum().item()     # & for boolean manipulation in pytorch, .item() to get a float
+    tn = (~pred & (Y == 0)).sum().item()    # ~pred instead of !pred
+    fp = (pred & (Y == 0)).sum().item()
+    fn = (~pred & (Y == 1)).sum().item()
 
     accuracy = (tp + tn) / (tp + tn + fp + fn)
     precision = tp / (tp + fp) if tp + fp > 0 else 0.0
