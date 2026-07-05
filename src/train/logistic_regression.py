@@ -5,7 +5,7 @@ from src.data.logistic_regression import data_logistic_regression
 from src.models.logistic_regression import LogisticRegression
 from src.utils.config import LOG_REG
 from src.utils.visualization import plot_loss, LogRegPlot, plot_logistic_regression
-from src.utils.metrics import logistic_regression_metrics
+from src.utils.metrics import binary_classification_metrics
 
 
 def train_logistic_regression():
@@ -19,6 +19,7 @@ def train_logistic_regression():
     optimizer = torch.optim.SGD(model.parameters(), lr=LOG_REG["lr"])           # Another possibility is Adam
     losses = []
 
+    model.train()
     for epoch in range(1, LOG_REG["epochs"] + 1):
         if epoch % 10 == 0:
             print(f"Epoch {epoch}/{LOG_REG['epochs']}")
@@ -38,7 +39,7 @@ def train_logistic_regression():
     model.eval()           # mode evaluation from now on
     with torch.no_grad():                # to ensure that pytorch does not compute the graph for inference
         logits = model(X)
-        metrics = logistic_regression_metrics(Y, logits)
+        metrics = binary_classification_metrics(Y, logits)
         print("========== Metrics ==========")
         print("Confusion matrix")
         print(f"              Pred 0    Pred 1")

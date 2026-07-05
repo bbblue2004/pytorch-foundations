@@ -12,13 +12,14 @@ def train_linear_regression():
     dirname = "01_linear_regression"
 
     X, fX, Y = data_linear_regression()
-    plot_linear_regression(LinRegPlot(X, Y, fX, dirname), "data.png")
+    plot_linear_regression(LinRegPlot(X, Y, fX, dirname, LIN_REG["w_true"], LIN_REG["b_true"]), "data.png")
 
     model = LinearRegression(X.shape[1], Y.shape[1])
     loss_fn = nn.MSELoss()                  # MSE for continuous variables
     optimizer = torch.optim.SGD(model.parameters(), lr=LIN_REG["lr"])           # Another possibility is Adam
     losses = []
 
+    model.train()
     for epoch in range(1, LIN_REG["epochs"] + 1):      # no need for dataloader and batches, as the dataset is small
         if epoch % 10 == 0:
             print(f"Epoch {epoch}/{LIN_REG['epochs']}")
@@ -33,7 +34,7 @@ def train_linear_regression():
     b = model.linear.bias.item()
     print(f"After training: w={w:.3f}, b={b:.3f} | actual: w={LIN_REG['w_true']}, b={LIN_REG['b_true']}")
 
-    plot_linear_regression(LinRegPlot(X, Y, fX, dirname, w, b), "fit.png")
+    plot_linear_regression(LinRegPlot(X, Y, fX, dirname, LIN_REG['w_true'], LIN_REG['b_true'], w, b), "fit.png")
 
     plot_loss(losses, dirname)
 

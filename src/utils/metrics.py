@@ -1,8 +1,24 @@
 import torch
 
 
+def show_confusion_matrix(metrics):
+    print("Confusion matrix")
+    print(f"              Pred 0    Pred 1")
+    print(f"Actual 0      {metrics['tn']:6d}    {metrics['fp']:6d}")
+    print(f"Actual 1      {metrics['fn']:6d}    {metrics['tp']:6d}")
+    print()
+    print(
+        f"Accuracy = {metrics['accuracy']:.4f}, "
+        f"Precision = {metrics['precision']:.4f}, "
+        f"Recall = {metrics['recall']:.4f}, "
+        f"F1-score = {metrics['f1']:.4f}"
+    )
+
+
+
+
 @torch.no_grad()      # decorator that disables gradient tracking: pytorch will not build a computational graph inside this function
-def linear_regression_metrics(Y: torch.Tensor, Yhat : torch.Tensor) -> dict:
+def linear_regression_metrics(Y: torch.Tensor, Yhat: torch.Tensor) -> dict:
     residual = Yhat - Y
     sq_err = residual.pow(2)    # or **2, but it's used more often apparently
     mse = sq_err.mean()
@@ -15,7 +31,7 @@ def linear_regression_metrics(Y: torch.Tensor, Yhat : torch.Tensor) -> dict:
 
 
 @torch.no_grad()
-def logistic_regression_metrics(Y: torch.Tensor, logits : torch.Tensor, threshold=0.5) -> dict:
+def binary_classification_metrics(Y: torch.Tensor, logits: torch.Tensor, threshold=0.5) -> dict:
     logits = logits.view(-1)          # logits : [400, 1] -> [400]
     Y = Y.float().view(-1)            # actually optional, but just in case
     Yhat = torch.sigmoid(logits)

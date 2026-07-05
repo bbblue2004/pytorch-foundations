@@ -14,3 +14,13 @@ LOG_REG = {
     "n_per_class": 200,
     "sigma": 2.0,
 }
+
+NN_2D = {
+    "epochs": 1000,
+    "lr": 0.1,
+    "n_per_class": 250,
+    "sigma": 1.4,
+    "input_size": 2,
+    "hidden_size": 16,
+    "output_size": 1
+}
