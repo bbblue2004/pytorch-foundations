@@ -23,20 +23,27 @@ def parse_args():
     parser.add_argument(
         "--exp",
         choices=list(EXPERIMENTS.keys()) + ["all"],
-        default="all",
-        help="Which experiment to run (default: all)",
+        default=None,
+        help="Which experiment to run (--exp all to run every experiment)",
     )
     return parser.parse_args()
 
 
 
 if __name__ == "__main__":
-    torch.manual_seed(SEED)
-
     args = parse_args()
 
-    if args.exp == "all":
-        for train in EXPERIMENTS.values():
-            train()
+    if args.exp is None:
+        print("No experiment selected. Use --exp <name> or --exp all")
+        print("Examples:")
+        print("  python main.py --exp mnist_mlp")
+        print("  python main.py --exp all")
+
     else:
-        EXPERIMENTS[args.exp]()
+        torch.manual_seed(SEED)
+
+        if args.exp == "all":
+            for train in EXPERIMENTS.values():
+                train()
+        else:
+            EXPERIMENTS[args.exp]()

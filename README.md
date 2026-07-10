@@ -42,13 +42,14 @@ pip install -r requirements.txt
 python main.py
 ```
 
-`main.py` can run any of these 5 experiments using --exp :
+`main.py` can run any of these 6 experiments using --exp :
 
 1. Linear regression  (--exp linreg)
 2. Logistic regression  (--exp logreg)
 3. Neural network on 2D data  (--exp nn2d)
-4. MLP on MNIST
+4. MLP on MNIST  (--exp mnist_mlp)
 5. CNN on MNIST
+6. All of the above  (--exp all)
 
 Metrics are printed in the terminal; plots are saved in each experiment subfolder under figures/.
 
@@ -119,7 +120,7 @@ This time, split between training and validation sets (80/20) to ensure that ove
 
 ### Model
 
-Use of nn.Module with nn.Sequential()
+Use of nn.Module with nn.Sequential().
 
 ### Metrics
 
@@ -128,6 +129,31 @@ Same metrics as logistic regression (binary classification in both cases).
 ### Figures
 
 The main directory is 03_neural_net_2D.
-data.png displays the points from the two (slightly overlapping) non linearly-separable classes
+data.png displays the points from the two (slightly overlapping) non linearly-separable classes.
 fit.png shows the predicted linear frontier on the full (training + validation) data.
-loss.png shows the evolution of the training + validation losses
+loss.png shows the evolution of the training + validation losses.
+
+
+## 4. MNIST MLP
+
+### Data
+
+Classic MNIST dataset, imported from torchvision. This time, the dataset is too large (60k) to charge all images in memory, so a DataLoader is required for train, val, test.
+The split is the following: 90% of training dataset used for training and 10% for validation during each epoch, while another test dataset is provided.
+
+### Model
+
+Use of nn.Module with nn.Sequential(). This time, it starts with nn.Flatten() to transform the tensor shape [N, 1, 28, 28] into a tensor of shape [N, 784] (flattened to a 1-dimensional vector of size 784).
+
+### Metrics
+
+This is a multiclass classification (10 classes, 0 -> 9), but the metrics are similar to those of binary classification.
+The accuracy stays the same.
+The confusion matrix now has a shape of 10x10, with a predominant diagonal.
+There is a precision and recall for each class c, and therefore a f1-score for each c.
+The average f1-score (or macro-f1) is computed.
+
+### Figures
+
+The main directory is 04_mnist_mlp.
+loss.png shows the evolution of the training + validation losses.
