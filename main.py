@@ -4,6 +4,7 @@ from src.train.linear_regression import train_linear_regression
 from src.train.logistic_regression import train_logistic_regression
 from src.train.neural_net_2D import train_neural_net_2D
 from src.train.mnist_mlp import train_mnist_mlp
+from src.train.mnist_cnn import train_mnist_cnn
 from src.utils.config import SEED
 
 
@@ -12,7 +13,7 @@ EXPERIMENTS = {
     "logreg": train_logistic_regression,
     "nn2d": train_neural_net_2D,
     "mnist_mlp": train_mnist_mlp,
-    # "mnist_cnn": train_mnist_cnn,
+    "mnist_cnn": train_mnist_cnn,
 }
 
 
@@ -27,7 +28,6 @@ def parse_args():
         help="Which experiment to run (--exp all to run every experiment)",
     )
     return parser.parse_args()
-
 
 
 if __name__ == "__main__":

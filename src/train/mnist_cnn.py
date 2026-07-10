@@ -1,41 +1,41 @@
 import torch
 from torch import nn
 from tqdm import tqdm
-from src.data.mnist_mlp import data_mnist_mlp
-from src.models.mnist_mlp import MNISTMLP
-from src.utils.config import MNIST_MLP
+from src.data.mnist_cnn import data_mnist_cnn
+from src.models.mnist_cnn import MNISTCNN
+from src.utils.config import MNIST_CNN
 from src.utils.visualization import plot_loss
 from src.utils.metrics import test_multiclass_accuracy, update_conf_mat, metrics_from_conf_mat
 
 
-def train_mnist_mlp():
+def train_mnist_cnn():
+    torch.set_num_threads(4)    # parallelization for training, optional here
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")     # works for both cpu and gpu
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+    
 
-    dirname = "04_mnist_mlp"
-    train_loader, val_loader, test_loader = data_mnist_mlp()
-    model = MNISTMLP(
-        MNIST_MLP["input_size"], 
-        MNIST_MLP["hidden_size"], 
-        MNIST_MLP["output_size"]
-    ).to(device)
-    loss_fn = nn.CrossEntropyLoss()               # it's not a binary classification anymore
-    optimizer = torch.optim.SGD(model.parameters(), lr=MNIST_MLP["lr"])           # Another possibility is Adam
+    dirname = "05_mnist_cnn"
+    train_loader, val_loader, test_loader = data_mnist_cnn()
+    model = MNISTCNN().to(device)
+    # model = torch.compile(model)
+
+    loss_fn = nn.CrossEntropyLoss()
+    optimizer = torch.optim.SGD(model.parameters(), lr=MNIST_CNN["lr"])    # actually mini-batch SGD, not 1 by 1 but batch
     train_losses = []
     val_losses = []
 
-    for epoch in range(1, MNIST_MLP["epochs"] + 1):
+    for epoch in range(1, MNIST_CNN["epochs"] + 1):
 
         model.train()
         epoch_train_loss = 0
 
-        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch}/{MNIST_MLP['epochs']}"):
+        for images, labels in tqdm(train_loader, desc=f"Epoch {epoch}/{MNIST_CNN['epochs']}"):
             images = images.to(device)
             labels = labels.to(device)
             optimizer.zero_grad()
             train_logits = model(images)
-            train_loss = loss_fn(train_logits, labels)    # this time, the shape must be [batch_size, output_size]
+            train_loss = loss_fn(train_logits, labels)
             epoch_train_loss += train_loss.item()
             train_loss.backward()
             optimizer.step()
@@ -48,7 +48,7 @@ def train_mnist_mlp():
         conf_mat = torch.zeros(10, 10, dtype=torch.int64)
 
         with torch.no_grad():
-            for images, labels in tqdm(val_loader, desc=f"Epoch {epoch}/{MNIST_MLP['epochs']}"):
+            for images, labels in tqdm(val_loader, desc=f"Epoch {epoch}/{MNIST_CNN['epochs']}"):
                 images = images.to(device)
                 labels = labels.to(device)
 

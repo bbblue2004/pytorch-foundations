@@ -35,3 +35,11 @@ MNIST_MLP = {
     "data_dir": "data",
     "batch_size": 64
 }
+
+MNIST_CNN = {
+    "epochs": 5,
+    "lr": 0.01,
+    "val_ratio": 0.1,
+    "data_dir": "data",
+    "batch_size": 32
+}

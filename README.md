@@ -25,6 +25,7 @@ pytorch-foundations/
     01_linear_regression/       # experiment 1 outputs
     02_logistic_regression      # experiment 2 outputs
     03_neural_net_2D/           # experiment 3 outputs
+    04_mnist_mlp/               # experiment 4 outputs
 ```
 
 
@@ -157,3 +158,11 @@ The average f1-score (or macro-f1) is computed.
 
 The main directory is 04_mnist_mlp.
 loss.png shows the evolution of the training + validation losses.
+
+
+## 5. MNIST CNN
+
+Notes :
+- num_workers, améliorations du dataloader en fonction de GPU/PU
+- impact du batch size bizarre : résultats et rapidité. Logique en fait car lié à la nature de SGD, tradeoff à trouver
+- plein de détails liés à l'architecture du modèle, cf commentaires sur le code : taille, padding, flatten à la fin, maxpool plutôt qu'avgpool ou autre, tailles fidèles au papier de LeCun, différence de connexions, ReLU plutôt que tanh différence de rapidité, détailler l'architecture
