@@ -36,7 +36,7 @@ def data_mnist_cnn():
         train_set,
         batch_size=MNIST_CNN["batch_size"],
         shuffle=True,
-        # num_workers=4,    # useless if only CPU. Parallelization for data loading
+        # num_workers=4,    # parallelization of loading, useful for GPU, in my case 0
         # pin_memory=True   # accelerates transfer CPU -> GPU, but in my case it's useless
     )
 

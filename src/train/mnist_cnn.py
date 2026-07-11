@@ -1,15 +1,16 @@
 import torch
 from torch import nn
+from torchvision.utils import save_image
 from tqdm import tqdm
 from src.data.mnist_cnn import data_mnist_cnn
 from src.models.mnist_cnn import MNISTCNN
 from src.utils.config import MNIST_CNN
-from src.utils.visualization import plot_loss
+from src.utils.visualization import plot_loss, _figure_path, plot_mnist_cnn
 from src.utils.metrics import test_multiclass_accuracy, update_conf_mat, metrics_from_conf_mat
 
 
 def train_mnist_cnn():
-    torch.set_num_threads(4)    # parallelization for training, optional here
+    torch.set_num_threads(4)    # limits the cpu threads used for computations
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
@@ -17,6 +18,13 @@ def train_mnist_cnn():
 
     dirname = "05_mnist_cnn"
     train_loader, val_loader, test_loader = data_mnist_cnn()
+
+    ## save an example
+    images, labels = next(iter(train_loader))    # first batch of the iterator train_loader
+    # cpu is used here and not device (which might be gpu)
+    save_image(images[:8].cpu(), _figure_path(dirname, "sample_images.png"), nrow=4)   # or directly through matplotlib
+
+
     model = MNISTCNN().to(device)
     # model = torch.compile(model)
 
@@ -71,7 +79,12 @@ def train_mnist_cnn():
         )
         print()
 
+    ## plots
     plot_loss(train_losses, dirname, val_losses=val_losses)
+
+    images, labels = next(iter(train_loader))
+    image = images[0:1].to(device)
+    plot_mnist_cnn(model, image, dirname, device)    # plots the filters from layer conv1 and feature maps from after
 
     model.eval()
     with torch.no_grad():

@@ -174,3 +174,46 @@ def plot_neural_net_2D(plot: NN2DPlot, filename):
 
     fig.savefig(_figure_path(plot.dirname, filename), dpi=120, bbox_inches="tight")
     plt.close(fig)
+
+
+@torch.no_grad()
+def plot_mnist_cnn(model, image, dirname, device):
+
+    model.eval()
+    image = image.to(device)
+
+    ## plot convolution filters
+    conv1 = model.net[1]
+    filters = conv1.weight.detach().cpu()
+
+    fig, axes = plt.subplots(2, 3, figsize=(8, 5))
+    for i, ax in enumerate(axes.flat):     # axes.flat: array of axes -> list
+        ax.imshow(filters[i, 0].numpy(), cmap="gray")
+        ax.set_title(f"Filter {i}")
+        ax.axis("off")
+    fig.suptitle("Conv1 filters (from learned weights)")   # global title
+    plt.savefig(_figure_path(dirname, "filters.png"))
+    plt.close()
+
+    ## plot feature maps on an image
+    x = image
+    x = model.net[0](x)
+    x = model.net[1](x)
+    x = model.net[2](x)
+
+    features = x.cpu()    # because numpy/matplotlib need cpu tensors
+    fig = plt.figure(figsize=(12, 8))
+
+    ax0 = fig.add_subplot(3, 3, 1)
+    ax0.imshow(image.cpu().squeeze().numpy(), cmap="gray", vmin=0, vmax=1)   # vmin and vmax to fix color scale
+    ax0.set_title("Input")
+    ax0.axis("off")
+
+    for i in range(6):
+        ax = fig.add_subplot(3, 3, i + 2)
+        ax.imshow(features[0, i].numpy(), cmap="viridis")
+        ax.set_title(f"Activation {i}")
+        ax.axis("off")
+    fig.suptitle("Conv1 feature maps on a sample image")
+    fig.savefig(_figure_path(dirname, "feature_maps.png"), dpi=120, bbox_inches="tight")   # dpi: dots per inch (resolution) and bbox_tight to avoid white margins
+    plt.close(fig)

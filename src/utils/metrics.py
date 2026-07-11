@@ -38,7 +38,7 @@ def binary_classification_metrics(Y: torch.Tensor, logits: torch.Tensor, thresho
     Yhat = torch.sigmoid(logits)
     pred = Yhat >= threshold
 
-    tp = (pred & (Y == 1)).sum().item()     # & for boolean manipulation in pytorch, .item() to get a float
+    tp = (pred & (Y == 1)).sum().item()     # & for boolean manipulation in pytorch, .item() to get a scalar (int64 generally)
     tn = (~pred & (Y == 0)).sum().item()    # ~pred instead of !pred
     fp = (pred & (Y == 0)).sum().item()
     fn = (~pred & (Y == 1)).sum().item()

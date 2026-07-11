@@ -35,7 +35,7 @@ def train_mnist_mlp():
             labels = labels.to(device)
             optimizer.zero_grad()
             train_logits = model(images)
-            train_loss = loss_fn(train_logits, labels)    # this time, the shape must be [batch_size, output_size]
+            train_loss = loss_fn(train_logits, labels)    # this time, logits shape is [batch_size, output_size]
             epoch_train_loss += train_loss.item()
             train_loss.backward()
             optimizer.step()
