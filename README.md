@@ -1,12 +1,20 @@
 # pytorch-foundations
 
-This project contains simple ML projects. The goal is to learn pytorch.
-It contains:
-- a linear regression
-- a logistic regression
-- a neural network on 2D data
-- a MLP on MNIST
-- a CNN on MNIST
+A progressive PyTorch tutorial: 5 experiments from linear regression to CNN on MNIST.
+
+Five small experiments in increasing complexity, from linear regression to a CNN on MNIST.
+Plots are saved in `figures/` and metrics are printed in the terminal.
+
+
+| #   | Experiment            | Typical result (CPU, default config)              |
+| --- | --------------------- | ------------------------------------------------- |
+| 1   | Linear regression     | R² ≈ 0.97, fitted `w≈2.85`, `b≈1.46` (true: 3, 2) |
+| 2   | Logistic regression   | Accuracy ≈ 93%, F1 ≈ 0.93                         |
+| 3   | Neural net on 2D data | Val accuracy ≈ 95%, F1 ≈ 0.95                     |
+| 4   | MLP on MNIST          | Test accuracy ≈ 91%, macro-F1 ≈ 0.91              |
+| 5   | CNN on MNIST          | Test accuracy ≈ 98%, macro-F1 ≈ 0.98              |
+
+
 
 
 ## Project structure
@@ -23,9 +31,10 @@ pytorch-foundations/
     utils/                      # config, metrics, plots
   figures/
     01_linear_regression/       # experiment 1 outputs
-    02_logistic_regression      # experiment 2 outputs
+    02_logistic_regression/     # experiment 2 outputs
     03_neural_net_2D/           # experiment 3 outputs
     04_mnist_mlp/               # experiment 4 outputs
+    05_mnist_cnn/               # experiment 5 outputs
 ```
 
 
@@ -40,129 +49,189 @@ cd pytorch-foundations
 python -m venv .venv
 .venv\Scripts\activate        # Windows
 pip install -r requirements.txt
-python main.py
+python main.py --exp mnist_cnn   # or: linreg, logreg, nn2d, mnist_mlp, all
 ```
 
-`main.py` can run any of these 6 experiments using --exp :
+`main.py` runs one of these 5 experiments via `--exp` (or all with `--exp all`) :
 
 1. Linear regression  (--exp linreg)
 2. Logistic regression  (--exp logreg)
 3. Neural network on 2D data  (--exp nn2d)
 4. MLP on MNIST  (--exp mnist_mlp)
-5. CNN on MNIST
+5. CNN on MNIST   (--exp mnist_cnn)
 6. All of the above  (--exp all)
 
 Metrics are printed in the terminal; plots are saved in each experiment subfolder under figures/.
 
-
-
 ## 1. Linear regression
 
-Implementation of a simple linear regression in pytorch.
+**Run:** `python main.py --exp linreg`
+
+Synthetic dataset: fit `Y ≈ w·X + b` with Gaussian noise. Introduces `nn.Module`, `MSELoss`, and SGD on the full dataset (no DataLoader).
 
 ### Data
 
-X = [-3, 3] with a step of 0.1  (60 points)
-f(X) = 3 * X + 2  (true parameters (3, 2))
-Y = f(X) + 0.6 * N(0, 1)  (random gaussian noise)
+- X ∈ [-3, 3], step 0.1 (60 points)
+- True function: `f(X) = 3·X + 2`
+- `Y = f(X) + 0.6 · N(0, 1)`
+
+
 
 ### Model
 
-Use of nn.Module, so small implementation
+Single `nn.Linear(1, 1)` — weights `w` and bias `b` learned by gradient descent.
+
+### Results
+
+After 50 epochs: `w≈2.85`, `b≈1.46` (target: 3, 2) — **R² ≈ 0.97**, MSE ≈ 0.87.
 
 ### Metrics
 
-MSE (mean square error)
-RMSE (root mean square error)
-MAE (mean absolute error)
-R2 = ESS / TSS = 1 - RSS/TSS. We remind that TSS = ESS + RSS. A good R2 is (very) close to 1.
+MSE, RMSE, MAE, R² = 1 − RSS/TSS (close to 1 is good).
 
 ### Figures
 
-The main directory is 01_linear_regression.
-data.png displays f(X) the theoretical repartition and Y the random dataset
-fit.png compares f(X) to the fitted linear function Yhat = w_pred * X + b_pred
-loss.png shows the evolution of the loss
+`figures/01_linear_regression/` — `data.png`, `fit.png`, `loss.png`.
 
+Linear regression fit
 
 ## 2. Logistic Regression
 
-Implementation of a simple logistic regression in pytorch.
+**Run:** `python main.py --exp logreg`
+
+Binary classification on 2D Gaussian blobs. Introduces `BCEWithLogitsLoss` (logits, no sigmoid in the forward pass).
 
 ### Data
 
-I reused the linear dataset from the repo mini-neural-network-from-scratch.
+Two overlapping classes (200 points each), inspired by [mini-neural-network-from-scratch](https://github.com/ppries/mini-neural-network-from-scratch).
 
 ### Model
 
-Use of nn.Module, so small implementation
+`nn.Linear(2, 1)` — linear decision boundary in the plane.
+
+### Results
+
+After 50 epochs: **accuracy ≈ 93%**, precision ≈ 0.93, recall ≈ 0.93, **F1 ≈ 0.93**.
 
 ### Metrics
 
-Accuracy: (TP + TN) / (TP + TN + FP + FN)
-Precision: TP / (TP + FP)
-Recall: TP / (TP + FN)
-F1-score: harmonic mean of precision and recall.
+Accuracy, precision, recall, F1-score (confusion matrix printed in the terminal).
 
 ### Figures
 
-The main directory is 02_logistic_regression.
-data.png displays the points from the two (slightly overlapping) classes
-fit.png shows the predicted linear frontier on the training data
-loss.png shows the evolution of the loss
+`figures/02_logistic_regression/` — `data.png`, `fit.png`, `loss.png`.
 
+Logistic regression decision boundary
 
 ## 3. Neural network on 2D Data
 
+**Run:** `python main.py --exp nn2d`
+
+Same family of 2D data as experiment 2, but **non-linearly separable**. Introduces a hidden layer, train/val split (80/20), and validation metrics.
+
 ### Data
 
-I reused the non-linear dataset from the repo mini-neural-network-from-scratch, with slight modifications of SIGMA and N_PER_CLASS.
-This time, split between training and validation sets (80/20) to ensure that overfitting is avoided.
+Two moons-style classes (250 points each). 80% train / 20% validation.
 
 ### Model
 
-Use of nn.Module with nn.Sequential().
+`nn.Sequential`: `Linear(2,16) → ReLU → Linear(16,1)` — non-linear decision boundary.
+
+### Results
+
+After 1000 epochs: train accuracy ≈ 95%, **val accuracy ≈ 95%**, val F1 ≈ 0.95.
 
 ### Metrics
 
-Same metrics as logistic regression (binary classification in both cases).
+Same as experiment 2, reported separately on train and validation sets.
 
 ### Figures
 
-The main directory is 03_neural_net_2D.
-data.png displays the points from the two (slightly overlapping) non linearly-separable classes.
-fit.png shows the predicted linear frontier on the full (training + validation) data.
-loss.png shows the evolution of the training + validation losses.
+`figures/03_neural_net_2D/` — `data.png`, `fit.png`, `loss.png`.
 
+Neural net decision boundary
 
 ## 4. MNIST MLP
 
+**Run:** `python main.py --exp mnist_mlp`
+
+First image dataset: `torchvision` MNIST + `DataLoader`. Multiclass classification (10 digits).
+
 ### Data
 
-Classic MNIST dataset, imported from torchvision. This time, the dataset is too large (60k) to charge all images in memory, so a DataLoader is required for train, val, test.
-The split is the following: 90% of training dataset used for training and 10% for validation during each epoch, while another test dataset is provided.
+MNIST (60k train + 10k test). 90/10 train/val split on the training set. Images as tensors `[N, 1, 28, 28]`.
 
 ### Model
 
-Use of nn.Module with nn.Sequential(). This time, it starts with nn.Flatten() to transform the tensor shape [N, 1, 28, 28] into a tensor of shape [N, 784] (flattened to a 1-dimensional vector of size 784).
+`Flatten → Linear(784,128) → ReLU → Linear(128,10)` — logits for 10 classes.
+
+### Results
+
+After 5 epochs (CPU): **test accuracy ≈ 91%**, macro-F1 ≈ 0.91.
 
 ### Metrics
 
-This is a multiclass classification (10 classes, 0 -> 9), but the metrics are similar to those of binary classification.
-The accuracy stays the same.
-The confusion matrix now has a shape of 10x10, with a predominant diagonal.
-There is a precision and recall for each class c, and therefore a f1-score for each c.
-The average f1-score (or macro-f1) is computed.
+Accuracy and macro-F1 on the test set; 10×10 confusion matrix.
 
 ### Figures
 
-The main directory is 04_mnist_mlp.
-loss.png shows the evolution of the training + validation losses.
+`figures/04_mnist_mlp/` — `loss.png`.
 
+MLP training loss
 
 ## 5. MNIST CNN
 
-Notes :
-- num_workers, améliorations du dataloader en fonction de GPU/PU
-- impact du batch size bizarre : résultats et rapidité. Logique en fait car lié à la nature de SGD, tradeoff à trouver
-- plein de détails liés à l'architecture du modèle, cf commentaires sur le code : taille, padding, flatten à la fin, maxpool plutôt qu'avgpool ou autre, tailles fidèles au papier de LeCun, différence de connexions, ReLU plutôt que tanh différence de rapidité, détailler l'architecture
+**Run:** `python main.py --exp mnist_cnn`
+
+### Data
+
+Same pipeline as experiment 4 (torchvision MNIST, 90/10 train/val split, separate test set).
+Images are tensors of shape `[N, 1, 28, 28]` with values in `[0, 1]` (`ToTensor` only).
+
+**DataLoader:** `num_workers=0` is often best on CPU/Windows for MNIST; `num_workers>0` mainly helps when a GPU waits on data loading. `pin_memory=True` only speeds up CPU→GPU transfer.
+
+**Batch size:** mini-batch SGD updates weights once per batch. Larger batches are faster per epoch but change optimization (fewer, smoother updates); smaller batches can improve accuracy at the cost of speed.
+
+### Model
+
+LeNet-5–style CNN adapted from [LeCun et al., 1998](http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf). MNIST is 28×28; we pad to 32×32 so conv/pool dimensions match the original architecture.
+
+
+| Layer                             | Output shape      | Notes                     |
+| --------------------------------- | ----------------- | ------------------------- |
+| `ZeroPad2d(2)`                    | `[N, 1, 32, 32]`  | pad 28→32                 |
+| Conv 5×5, 6 filters + ReLU        | `[N, 6, 28, 28]`  | paper used **tanh**       |
+| MaxPool 2×2                       | `[N, 6, 14, 14]`  | paper used **avg pool**   |
+| Conv 5×5, 16 filters + ReLU       | `[N, 16, 10, 10]` |                           |
+| MaxPool 2×2                       | `[N, 16, 5, 5]`   |                           |
+| Conv 5×5, 120 filters (C5) + ReLU | `[N, 120, 1, 1]`  | 5×5 kernel on 5×5 spatial |
+| Flatten                           | `[N, 120]`        |                           |
+| Linear 120→84 + ReLU              |                   | F6 in the paper           |
+| Linear 84→10                      | logits            | 10 digit classes          |
+
+
+Unlike the MLP, there is no `Flatten` at the input: the network keeps the 2D structure and learns local filters before the fully connected head.
+
+### Metrics
+
+Same as experiment 4 (accuracy + macro-F1 on the test set).
+
+### Results
+
+After 5 epochs (CPU): **test accuracy ≈ 98%**, macro-F1 ≈ 0.98.
+
+### Figures
+
+The main directory is `05_mnist_cnn/`.
+
+
+| File                | Description                          |
+| ------------------- | ------------------------------------ |
+| `loss.png`          | Train / val loss per epoch           |
+| `sample_images.png` | 8 MNIST digits from a training batch |
+| `filters.png`       | 6 learned 5×5 kernels from Conv1     |
+| `feature_maps.png`  | Conv1 activations on one input digit |
+
+
+MNIST samples
+

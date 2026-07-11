@@ -16,6 +16,14 @@ EXPERIMENTS = {
     "mnist_cnn": train_mnist_cnn,
 }
 
+EXPERIMENT_LABELS = {
+    "linreg": "Linear regression",
+    "logreg": "Logistic regression",
+    "nn2d": "Neural network on 2D data",
+    "mnist_mlp": "MLP on MNIST",
+    "mnist_cnn": "CNN on MNIST",
+}
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -43,7 +51,11 @@ if __name__ == "__main__":
         torch.manual_seed(SEED)
 
         if args.exp == "all":
-            for train in EXPERIMENTS.values():
+            total = len(EXPERIMENTS)
+            for i, (name, train) in enumerate(EXPERIMENTS.items(), start=1):
+                label = EXPERIMENT_LABELS[name]
+                print(f"\n========== Starting experiment {i}/{total}: {label} ==========\n")
                 train()
         else:
+            print(f"\n========== Starting: {EXPERIMENT_LABELS[args.exp]} ==========\n")
             EXPERIMENTS[args.exp]()
